@@ -1,11 +1,9 @@
 
 import csv
 import math
-from pathlib import Path
+from software.config import FINGERPRINTS_FILE, MATCH_THRESHOLD
 
-FINGERPRINTS_FILE = Path(__file__).resolve().parent / "fingerprints.csv"
-
-# Step 1: Load the reference database
+# Step 1: Load reference fingerprints
 reference_database = {}
 
 with FINGERPRINTS_FILE.open("r", newline="") as file:
@@ -24,12 +22,14 @@ with FINGERPRINTS_FILE.open("r", newline="") as file:
 
 
 # Step 2: Enter an unknown fingerprint
-# These are simulated test values for now.
-
 unknown_fingerprint = [1.20, 0.80, 1.50]
 
 
-# Step 3: Calculate Euclidean distance
+# Step 3: Set a provisional threshold
+threshold = MATCH_THRESHOLD
+
+
+# Step 4: Calculate Euclidean distance
 def calculate_distance(fingerprint1, fingerprint2):
 
     total = 0
@@ -40,16 +40,14 @@ def calculate_distance(fingerprint1, fingerprint2):
 
         total += difference ** 2
 
-    distance = math.sqrt(total)
-
-    return distance
+    return math.sqrt(total)
 
 
-# Step 4: Compare with every reference tag
-print("Q-SIGN FINGERPRINT MATCHING")
-print("============================")
-
+# Step 5: Compare fingerprints
 distances = {}
+
+print("Q-SIGN AUTHENTICATION SYSTEM")
+print("============================")
 
 for tag, reference in reference_database.items():
 
@@ -63,8 +61,24 @@ for tag, reference in reference_database.items():
     print(tag, "Distance:", round(distance, 4))
 
 
-# Step 5: Find the closest candidate
+# Step 6: Find the closest reference
 closest_tag = min(distances, key=distances.get)
 
-print("\nClosest matching tag:", closest_tag)
-print("Matching distance:", round(distances[closest_tag], 4))
+minimum_distance = distances[closest_tag]
+
+print("\nClosest candidate:", closest_tag)
+print("Minimum distance:", round(minimum_distance, 4))
+
+
+# Step 7: Apply threshold
+print("\nAUTHENTICATION RESULT")
+
+if minimum_distance <= threshold:
+
+    print("POSSIBLE MATCH:", closest_tag)
+
+else:
+
+    print("UNKNOWN TAG")
+
+print("\nThreshold used:", threshold)

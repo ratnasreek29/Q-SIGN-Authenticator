@@ -1,8 +1,6 @@
 
 import csv
-from pathlib import Path
-
-READINGS_FILE = Path(__file__).resolve().parent / "readings.csv"
+from software.config import READINGS_FILE
 
 # Open the dataset
 with READINGS_FILE.open("r", newline="") as file:

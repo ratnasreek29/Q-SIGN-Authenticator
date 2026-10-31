@@ -1,9 +1,7 @@
 
 import csv
 import math
-from pathlib import Path
-
-READINGS_FILE = Path(__file__).resolve().parent / "readings.csv"
+from software.config import READINGS_FILE
 
 # Step 1: Read all sensor readings
 tag_data = {}
