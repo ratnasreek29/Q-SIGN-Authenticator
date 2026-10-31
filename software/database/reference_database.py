@@ -1,8 +1,6 @@
 
 import csv
-from pathlib import Path
-
-FINGERPRINTS_FILE = Path(__file__).resolve().parent / "fingerprints.csv"
+from software.config import FINGERPRINTS_FILE
 
 # Create an empty reference database
 reference_database = {}

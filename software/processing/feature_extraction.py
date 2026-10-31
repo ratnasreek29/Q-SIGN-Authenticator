@@ -1,10 +1,7 @@
 
 import csv
-from pathlib import Path
-
-SOFTWARE_DIR = Path(__file__).resolve().parent
-READINGS_FILE = SOFTWARE_DIR / "readings.csv"
-FINGERPRINTS_FILE = SOFTWARE_DIR / "fingerprints.csv"
+from software.config import FINGERPRINTS_FILE, READINGS_FILE
+from software.processing.preprocessing import extract_rgb_features
 
 tag_readings = {}
 
@@ -37,18 +34,17 @@ for tag, readings in tag_readings.items():
     blue = sum(readings["Blue"]) / len(readings["Blue"])
 
     # Step 3: Extract features
-    if green != 0 and blue != 0:
+    try:
+        red_green, blue_green, red_blue = extract_rgb_features(red, green, blue)
+    except ValueError:
+        continue
 
-        red_green = red / green
-        blue_green = blue / green
-        red_blue = red / blue
-
-        fingerprints.append({
-            "Sample_ID": tag,
-            "R_G": round(red_green, 4),
-            "B_G": round(blue_green, 4),
-            "R_B": round(red_blue, 4)
-        })
+    fingerprints.append({
+        "Sample_ID": tag,
+        "R_G": round(red_green, 4),
+        "B_G": round(blue_green, 4),
+        "R_B": round(red_blue, 4)
+    })
 
 
 # Step 4: Display the fingerprints

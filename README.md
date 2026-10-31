@@ -1,6 +1,11 @@
 # Q-SIGN Authenticator
 ### Quantum-Dot-Based Optical Fingerprinting System for Product Authentication
 
+handwritten (dont use ai in this section) -
+to run it - python -m software.main
+to run test - python -m unittest discover -s tests
+
+
 ## About the Project
 
 Q-SIGN is a product-authentication prototype that explores the use of quantum-dot-based optical markers to create optical fingerprints for product verification.
@@ -43,19 +48,19 @@ The proposed system follows this process:
 
 ## Software Workflow
 
-The current software prototype consists of the following stages:
+The software is grouped by responsibility under `software/`:
 
 ### 1. Dataset Generation
-`sensor_simulator.py`
+`software/acquisition/sensor_simulator.py`
 
 Generates simulated RGB readings for different optical tags and stores them in `readings.csv`.
 
 ### 2. Dataset Analysis
-- `dataset_analysis.py` – Displays the generated dataset.
-- `average_analysis.py` – Calculates average sensor readings for each tag.
+- `software/evaluation/dataset_analysis.py` – Displays the generated dataset.
+- `software/processing/average_analysis.py` – Calculates average sensor readings for each tag.
 
 ### 3. Fingerprint Extraction
-`feature_extraction.py`
+`software/processing/feature_extraction.py`
 
 Extracts three numerical features from average RGB readings:
 
@@ -66,22 +71,21 @@ Extracts three numerical features from average RGB readings:
 The extracted fingerprints are stored in `fingerprints.csv`.
 
 ### 4. Reference Database
-`reference_database.py`
+`software/database/reference_database.py`
 
 Loads and organises the stored optical fingerprints for further comparison.
 
 ### 5. Fingerprint Matching
-- `fingerprint_matching.py` – Compares a scanned fingerprint with stored fingerprints.
-- `threshold_matching.py` – Uses a distance threshold to classify a fingerprint.
-- `test_unknown.py` – Allows manual testing with RGB values.
+- `software/authentication/fingerprint_matching.py` – Compares a scanned fingerprint with stored fingerprints.
+- `software/authentication/threshold_matching.py` – Uses a distance threshold to classify a fingerprint.
 
 ### 6. Performance Evaluation
-- `performance_evaluation.py` – Evaluates fingerprint matching using calibration and test readings.
-- `confusion_matrix.py` – Displays classification results using a confusion matrix.
+- `software/evaluation/performance_evaluation.py` – Evaluates fingerprint matching using calibration and test readings.
+- `software/evaluation/confusion_matrix.py` – Displays classification results using a confusion matrix.
 
 ### 7. Product Registration and Authentication
-- `register_product.py` – Associates product IDs with available optical tags.
-- `product_authentication.py` – Retrieves the expected fingerprint and compares it with the scanned RGB readings.
+- `software/registration/register_product.py` – Associates product IDs with available optical tags.
+- `software/authentication/product_authentication.py` – Retrieves the expected fingerprint and compares it with scanned RGB readings.
 
 ## Fingerprint Matching Algorithm
 
@@ -112,45 +116,44 @@ The threshold requires further calibration using actual hardware measurements.
 ### Steps
 
 1. Clone or download this repository.
-2. Open the `software` folder in VS Code.
-3. Open the integrated terminal.
-4. Run the following commands in sequence:
+2. Open the repository root in VS Code and open a terminal there.
+3. Run the following commands in sequence:
 
 ```bash
-python sensor_simulator.py
-python dataset_analysis.py
-python average_analysis.py
-python feature_extraction.py
-python reference_database.py
+python -m software.acquisition.sensor_simulator
+python -m software.evaluation.dataset_analysis
+python -m software.processing.average_analysis
+python -m software.processing.feature_extraction
+python -m software.database.reference_database
 ```
 
 5. Test fingerprint matching:
 
 ```bash
-python fingerprint_matching.py
-python threshold_matching.py
+python -m software.authentication.fingerprint_matching
+python -m software.authentication.threshold_matching
 ```
 
 6. Evaluate the prototype:
 
 ```bash
-python performance_evaluation.py
-python confusion_matrix.py
+python -m software.evaluation.performance_evaluation
+python -m software.evaluation.confusion_matrix
 ```
 
 7. Register a product:
 
 ```bash
-python register_product.py
+python -m software.registration.register_product
 ```
 
 8. Authenticate a registered product:
 
 ```bash
-python product_authentication.py
+python -m software.authentication.product_authentication
 ```
 
-Note: Run these commands from inside the `software` directory. The simulator generates the readings used by the subsequent scripts. Register products before attempting product authentication.
+Run all commands from the repository root. `python -m software.main` opens a simple workflow menu. The simulator generates readings for later steps; register products before attempting authentication. Run the tests with `python -m unittest discover -s tests`.
 
 ## Current Development Status
 
@@ -163,6 +166,8 @@ The current implementation is a software proof of concept.
 - Product-specific fingerprint matching is implemented.
 
 Actual quantum-dot measurements and physical sensor-based authentication have not yet been integrated.
+
+The ESP32 interface and dashboard modules are placeholders for future integration. The current workflow uses CSV files in `software/data`; `software/database/database_manager.py` can initialize the optional SQLite database.
 
 ## Future Scope
 
