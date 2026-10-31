@@ -1,7 +1,7 @@
 # Q-SIGN Authenticator
 ### Quantum-Dot-Based Optical Fingerprinting System for Product Authentication
 
-###handwritten (dont use ai in this section)### -
+### handwritten (dont use ai in this section) ### -
 to run it - python -m software.main
 to run test - python -m unittest discover -s tests
 
