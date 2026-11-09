@@ -55,14 +55,56 @@ for fingerprint in fingerprints:
     print(fingerprint)
 
 
-# Step 5: Save fingerprints into a CSV file
-with FINGERPRINTS_FILE.open("w", newline="") as file:
 
-    fieldnames = ["Sample_ID", "R_G", "B_G", "R_B"]
+# Step 5: Save only NEW fingerprints without overwriting existing tags
 
-    writer = csv.DictWriter(file, fieldnames=fieldnames)
+fieldnames = ["Sample_ID", "R_G", "B_G", "R_B"]
 
-    writer.writeheader()
-    writer.writerows(fingerprints)
+# Load existing registered tag IDs
+existing_tags = set()
 
-print("\nFingerprints successfully saved!")
+if FINGERPRINTS_FILE.exists() and FINGERPRINTS_FILE.stat().st_size > 0:
+    with FINGERPRINTS_FILE.open("r", newline="") as file:
+        reader = csv.DictReader(file)
+
+        if reader.fieldnames != fieldnames:
+            raise ValueError(
+                "Unexpected fingerprint CSV format. "
+                "Existing data has not been modified."
+            )
+
+        existing_tags = {
+            row["Sample_ID"].strip().upper()
+            for row in reader
+        }
+
+# Identify fingerprints that are not already registered
+new_fingerprints = [
+    fingerprint
+    for fingerprint in fingerprints
+    if fingerprint["Sample_ID"].strip().upper() not in existing_tags
+]
+
+# Create the data directory if necessary
+FINGERPRINTS_FILE.parent.mkdir(parents=True, exist_ok=True)
+
+# Append only new tags
+if new_fingerprints:
+    file_exists = (
+        FINGERPRINTS_FILE.exists()
+        and FINGERPRINTS_FILE.stat().st_size > 0
+    )
+
+    with FINGERPRINTS_FILE.open("a", newline="") as file:
+        writer = csv.DictWriter(file, fieldnames=fieldnames)
+
+        if not file_exists:
+            writer.writeheader()
+
+        writer.writerows(new_fingerprints)
+
+    print(f"\n{len(new_fingerprints)} new fingerprint(s) saved.")
+else:
+    print("\nNo new fingerprints to save.")
+
+print("Existing registered fingerprints were preserved.")
