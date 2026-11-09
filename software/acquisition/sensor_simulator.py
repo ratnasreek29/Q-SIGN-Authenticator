@@ -1,9 +1,7 @@
 
-import random
 import csv
-from pathlib import Path
-
-READINGS_FILE = Path(__file__).resolve().parent / "readings.csv"
+import random
+from software.config import READINGS_FILE
 
 # Q-SIGN SENSOR SIMULATOR
 
