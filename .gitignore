@@ -1,6 +1,33 @@
+# Python temporary files
 __pycache__/
 *.py[cod]
+
+# Virtual environments
 .venv/
 venv/
+
+# IDE settings
 .idea/
 .vscode/
+
+# Private Streamlit configuration
+.streamlit/secrets.toml
+**/.streamlit/secrets.toml
+
+# Environment variables
+.env
+.env.*
+
+# Local SQLite databases
+*.db
+*.sqlite
+*.sqlite3
+
+# Operating system files
+.DS_Store
+Thumbs.db
+# Q-SIGN local fingerprint and sensor data
+software/data/fingerprints.csv
+software/data/readings.csv
+software/data/fingerprints_backup.csv
+software/data/product_registry.csv

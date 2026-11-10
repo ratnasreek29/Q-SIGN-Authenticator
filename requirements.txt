@@ -1,1 +1,3 @@
-# Q-SIGN currently uses only the Python standard library.
+streamlit
+pandas
+numpy# Q-SIGN currently uses only the Python standard library.
