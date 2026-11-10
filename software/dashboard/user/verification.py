@@ -126,6 +126,12 @@ registered optical fingerprint associated with a product.
     # Load existing registered data
     products = load_product_registry()
     references = load_reference_fingerprints()
+    if not references:
+        st.warning(
+            "No optical fingerprints are registered yet. "
+            "Please contact the administrator."
+        )
+        return
 
     if not products:
         st.warning(

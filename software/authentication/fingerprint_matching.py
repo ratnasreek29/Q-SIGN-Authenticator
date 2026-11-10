@@ -6,45 +6,69 @@ from software.config import FINGERPRINTS_FILE
 
 
 def load_reference_fingerprints(path=FINGERPRINTS_FILE):
+    """
+    Load registered optical fingerprints.
+
+    Returns an empty dictionary if the fingerprint
+    CSV does not exist or is empty.
+    """
+
+    # Handle a fresh Streamlit Cloud deployment.
+    if not path.exists() or path.stat().st_size == 0:
+        return {}
+
+    fingerprints = {}
+
     with path.open("r", newline="") as file:
-        return {
-            row["Sample_ID"]: [
+        reader = csv.DictReader(file)
+
+        required_columns = {
+            "Sample_ID",
+            "R_G",
+            "B_G",
+            "R_B",
+        }
+
+        if not required_columns.issubset(reader.fieldnames or []):
+            raise ValueError(
+                "Invalid fingerprint CSV format. "
+                "Required columns: Sample_ID, R_G, B_G, R_B."
+            )
+
+        for row in reader:
+            tag_id = row["Sample_ID"].strip().upper()
+
+            if not tag_id:
+                continue
+
+            fingerprints[tag_id] = (
                 float(row["R_G"]),
                 float(row["B_G"]),
                 float(row["R_B"]),
-            ]
-            for row in csv.DictReader(file)
-        }
+            )
+
+    return fingerprints
 
 
-def calculate_distance(first, second):
-    if len(first) != len(second):
-        raise ValueError("Fingerprints must have the same number of features.")
-    return math.sqrt(sum((left - right) ** 2 for left, right in zip(first, second)))
+def calculate_distance(features1, features2):
+    """
+    Calculate Euclidean distance between two
+    normalized optical fingerprint vectors.
+    """
 
+    if len(features1) != len(features2):
+        raise ValueError(
+            "Fingerprint feature vectors must have equal lengths."
+        )
 
-def find_closest_match(fingerprint, references):
-    if not references:
-        raise ValueError("At least one reference fingerprint is required.")
-    return min(
-        ((tag, calculate_distance(fingerprint, reference)) for tag, reference in references.items()),
-        key=lambda match: match[1],
+    if len(features1) != 3:
+        raise ValueError(
+            "Each fingerprint must contain exactly three features."
+        )
+
+    return math.sqrt(
+        sum(
+            (float(a) - float(b)) ** 2
+            for a, b in zip(features1, features2)
+        )
     )
-
-
-def main():
-    references = load_reference_fingerprints()
-    unknown_fingerprint = [1.20, 0.80, 1.50]
-
-    print("Q-SIGN FINGERPRINT MATCHING")
-    print("============================")
-    for tag, reference in references.items():
-        print(tag, "Distance:", round(calculate_distance(unknown_fingerprint, reference), 4))
-
-    closest_tag, distance = find_closest_match(unknown_fingerprint, references)
-    print("\nClosest matching tag:", closest_tag)
-    print("Matching distance:", round(distance, 4))
-
-
-if __name__ == "__main__":
-    main()
